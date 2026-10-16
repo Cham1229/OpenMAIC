@@ -50,6 +50,25 @@ describe('course cards of runs', () => {
         snapshot({ state: 'generating', progress: { scenesTotal: 0, scenesCompleted: 0 } }),
       ),
     ).toEqual({ kind: 'generating', completed: 0, total: 0 });
+    // When retrying a failed scene out of order, derives current page from run.step
+    expect(
+      courseRunStatus(
+        snapshot({
+          state: 'generating',
+          step: 'scene:1:content',
+          progress: { scenesTotal: 3, scenesCompleted: 2 },
+        }),
+      ),
+    ).toEqual({ kind: 'generating', completed: 2, total: 3 });
+    expect(
+      courseRunStatus(
+        snapshot({
+          state: 'generating',
+          step: 'agents',
+          progress: { scenesTotal: 3, scenesCompleted: 0 },
+        }),
+      ),
+    ).toEqual({ kind: 'generating', completed: 1, total: 3 });
     expect(courseRunStatus(snapshot({ state: 'paused' }))).toEqual({ kind: 'paused' });
     expect(courseRunStatus(snapshot({ state: 'completed' }))).toBeNull();
   });
