@@ -20,12 +20,15 @@ export function courseRunStatus(
       return { kind: 'outlining' };
     case 'awaiting_outline_confirmation':
       return { kind: 'awaiting-confirmation' };
-    case 'generating':
+    case 'generating': {
+      const total = run.progress.scenesTotal;
+      const current = total > 0 ? Math.min(run.progress.scenesCompleted + 1, total) : 0;
       return {
         kind: 'generating',
-        completed: run.progress.scenesCompleted,
-        total: run.progress.scenesTotal,
+        completed: current,
+        total,
       };
+    }
     case 'paused':
       return { kind: 'paused' };
     default:
