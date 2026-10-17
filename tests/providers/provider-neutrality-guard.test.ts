@@ -38,6 +38,7 @@ const REGISTRY_SOURCES: readonly RegistrySource[] = [
   { file: 'lib/media/image-providers.ts', declarations: ['IMAGE_PROVIDERS'] },
   { file: 'lib/media/video-providers.ts', declarations: ['VIDEO_PROVIDERS'] },
   { file: 'lib/web-search/constants.ts', declarations: ['WEB_SEARCH_PROVIDERS'] },
+  { file: 'lib/web-fetch/registry.ts', declarations: ['WEB_FETCH_PROVIDERS'] },
   { file: 'lib/pdf/constants.ts', declarations: ['PDF_PROVIDERS'] },
   {
     file: 'lib/document/extractors/manifest.ts',
@@ -63,7 +64,6 @@ const PROVIDER_NEUTRAL_FILES = [
   // NOTE: lib/server/agent-runtime/agent-driver-model.ts is not on main yet.
   // Add it back here the moment the agent driver lands on main so the neutral
   // driver surface is guarded from day one.
-  'lib/orchestration/ai-sdk-adapter.ts',
   // Capability routes
   'app/api/generate/tts/route.ts',
   'app/api/generate/voice/route.ts',
@@ -80,6 +80,7 @@ const PROVIDER_NEUTRAL_FILES = [
   'lib/server/generation/steps/research.ts',
   'lib/server/generation/steps/material-analysis.ts',
   'lib/audio/voice-registration-client.ts',
+  'lib/server/agent-runtime/fetch-url.ts',
   'lib/web-search/index.ts',
   'lib/server/web-search-config.ts',
   // Registry-based document dispatch
@@ -393,6 +394,8 @@ function deriveVendorVocabulary(readSource: (file: string) => string): string[] 
   const terms = new Set<string>();
 
   for (const providerId of providerIds) {
+    // The keyless builtin reader is an implementation category, not a vendor.
+    if (providerId === 'builtin') continue;
     const distinctiveParts = providerId
       .split(/[^a-z0-9]+/u)
       .filter((part) => part.length >= 3 && !GENERIC_ID_PARTS.has(part));
